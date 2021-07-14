@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import tokenApi from '../services/tokenApi';
 import logo from '../trivia.png';
 
 class Login extends Component {
@@ -10,6 +12,7 @@ class Login extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.validateLogin = this.validateLogin.bind(this);
+    this.startGame = this.startGame.bind(this);
   }
 
   handleChange({ target: { name, value } }) {
@@ -22,6 +25,11 @@ class Login extends Component {
       return false;
     }
     return true;
+  }
+
+  async startGame() {
+    const { token } = await tokenApi();
+    localStorage.setItem('token', token);
   }
 
   render() {
@@ -61,7 +69,7 @@ class Login extends Component {
             data-testid="btn-play"
             type="button"
             disabled={ this.validateLogin() }
-            // onClick={}
+            onClick={ () => this.startGame() }
           >
             Jogar
           </button>
@@ -72,4 +80,8 @@ class Login extends Component {
   }
 }
 
-export default Login;
+const mapDispatchToProps = () => ({
+  // getTokenAction: () => dispatch(getTokenAction()),
+});
+
+export default connect(null, mapDispatchToProps)(Login);

@@ -80,7 +80,7 @@ class Login extends Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = () => ({
   // getTokenAction: () => dispatch(getTokenAction()),
 });
 

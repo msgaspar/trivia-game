@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import { updateScore } from '../actions/playerActions';
-import getStorage from '../services/storage'
+import getStorage from '../services/storage';
 
 class Game extends Component {
   constructor() {
@@ -40,7 +40,7 @@ class Game extends Component {
 
   newScore(difficulty, time) {
     const ten = 10;
-    const three = 3;    
+    const three = 3;
     switch (difficulty) {
     case 'hard':
       return ten + (time * three);
@@ -57,11 +57,11 @@ class Game extends Component {
     const { triviaQuestions, idTrivia, updateScoreAction } = this.props;
     const { timeLeft } = this.state;
     const { difficulty } = triviaQuestions[idTrivia];
-    const { player } = JSON.parse(localStorage.getItem('state'));
-    console.log(player.score)
+    const { player } = getStorage('state');
+    console.log(player.score);
     const newScore = this.newScore(difficulty, timeLeft);
     player.score = newScore;
-    console.log(player.score)
+    console.log(player.score);
     localStorage.setItem('state', JSON.stringify({ player }));
     updateScoreAction(newScore);
   }

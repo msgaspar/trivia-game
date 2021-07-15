@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import { updateScore } from '../actions/playerActions';
+import getStorage from '../services/storage'
 
 class Game extends Component {
   constructor() {
@@ -10,8 +11,24 @@ class Game extends Component {
     this.state = {
       borderCorrect: '',
       borderIncorrect: '',
+      isAnswered: false,
+      timeLeft: 30,
     };
+    this.changeBorderColor = this.changeBorderColor.bind(this);
+    this.countDown = this.countDown.bind(this);
     this.checkAnswer = this.checkAnswer.bind(this);
+  }
+
+  componentDidMount() {
+    const ONE_SECOND = 1000;
+    this.timer = setInterval(
+      this.countDown,
+      ONE_SECOND,
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
   }
 
   changeBorderColor() {
@@ -21,38 +38,51 @@ class Game extends Component {
     });
   }
 
-  updateScore(answer) {
+  newScore(difficulty, time) {
+    const ten = 10;
+    const three = 3;    
+    switch (difficulty) {
+    case 'hard':
+      return ten + (time * three);
+    case 'medium':
+      return ten + (time * 2);
+    case 'easy':
+      return ten + (time * 1);
+    default:
+      return 0;
+    }
+  }
+
+  updateScore() {
     const { triviaQuestions, idTrivia, updateScoreAction } = this.props;
+    const { timeLeft } = this.state;
     const { difficulty } = triviaQuestions[idTrivia];
     const { player } = JSON.parse(localStorage.getItem('state'));
-    if (answer === 'correct') {
-      const ten = 10;
-      const three = 3;
-      switch (difficulty) {
-      case 'hard':
-        score = 10 + (3);
-        break;
-      case 'medium':
-        score = 10 + (2);
-        break;
-      case 'easy':
-        score = 10 + (1);
-        break;
-      default:
-        score = 0;
-      }
-    }
+    console.log(player.score)
+    const newScore = this.newScore(difficulty, timeLeft);
+    player.score = newScore;
+    console.log(player.score)
     localStorage.setItem('state', JSON.stringify({ player }));
-    updateScoreAction(player.score)
+    updateScoreAction(newScore);
   }
 
   checkAnswer(answer) {
-    this.updateScore(answer);
+    this.setState({ isAnswered: true });
     this.changeBorderColor();
+    if (answer === 'correct') {
+      this.updateScore();
+    }
+  }
+
+  countDown() {
+    const { timeLeft, isAnswered } = this.state;
+    if (timeLeft > 0 && !isAnswered) {
+      this.setState((oldState) => ({ timeLeft: oldState.timeLeft - 1 }));
+    }
   }
 
   renderQuestion() {
-    const { borderCorrect, borderIncorrect } = this.state;
+    const { borderCorrect, borderIncorrect, timeLeft, isAnswered } = this.state;
     const { triviaQuestions, idTrivia } = this.props;
     const { category,
       question,
@@ -72,6 +102,7 @@ class Game extends Component {
               key={ `wrong-answer-${index}` }
               data-testid={ `wrong-answer-${index}` }
               onClick={ () => this.checkAnswer('incorrect') }
+              disabled={ timeLeft === 0 || isAnswered }
             >
               { incorrectAnswer }
             </button>
@@ -81,21 +112,27 @@ class Game extends Component {
             type="button"
             data-testid="correct-answer"
             onClick={ () => this.checkAnswer('correct') }
+            disabled={ timeLeft === 0 || isAnswered }
           >
             { correctAnswer }
           </button>
         </div>
-
       </div>
     );
   }
 
   render() {
+    const { timeLeft } = this.state;
     const { triviaQuestions } = this.props;
     return (
       <div>
         <Header />
         { triviaQuestions.length > 0 ? this.renderQuestion() : <p>Carregando...</p> }
+        <p>
+          Tempo:
+          {' '}
+          { timeLeft }
+        </p>
       </div>
     );
   }
@@ -108,8 +145,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  updateScoreAction: (score) => dispatch(updateScore(score))
-})
+  updateScoreAction: (score) => dispatch(updateScore(score)),
+});
 
 Game.propTypes = ({
   triviaQuestions: PropTypes.shape(Object),

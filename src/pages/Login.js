@@ -5,6 +5,8 @@ import tokenApi from '../services/tokenApi';
 import logo from '../trivia.png';
 import { setPlayer } from '../actions/playerActions';
 
+import './Login.css';
+
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -55,6 +57,7 @@ class Login extends Component {
           name={ name }
           value={ value }
           onChange={ this.handleChange }
+          autoComplete="off"
         />
       </label>
     );
@@ -64,12 +67,11 @@ class Login extends Component {
     const { email, name } = this.state;
     const { history } = this.props;
     return (
-      <div>
+      <div className="login-container">
         <header className="App-header">
           <img src={ logo } className="App-logo" alt="logo" />
-          <p>SUA VEZ</p>
         </header>
-        <form>
+        <form className="login-form">
           { this.createTextInput('input-player-name', name, 'Nome:', 'name')}
           { this.createTextInput('input-gravatar-email', email, 'E-mail:', 'email')}
           <button

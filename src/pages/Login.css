@@ -27,12 +27,12 @@
 }
 
 .login-form button {
+  background-color: greenyellow;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
   font-size: 20px;
   padding: 8px 15px;
-  border-radius: 6px;
-  border: none;
-  background-color: greenyellow;
-  cursor: pointer;
 }
 
 .login-form button:first-of-type {

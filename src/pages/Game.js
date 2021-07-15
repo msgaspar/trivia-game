@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
+import { updateScore } from '../actions/playerActions';
 
 class Game extends Component {
   constructor() {
@@ -10,7 +11,7 @@ class Game extends Component {
       borderCorrect: '',
       borderIncorrect: '',
     };
-    this.changeBorderColor = this.changeBorderColor.bind(this);
+    this.checkAnswer = this.checkAnswer.bind(this);
   }
 
   changeBorderColor() {
@@ -18,6 +19,36 @@ class Game extends Component {
       borderCorrect: '3px solid rgb(6, 240, 15)',
       borderIncorrect: '3px solid rgb(255, 0, 0)',
     });
+  }
+
+  updateScore(answer) {
+    const { triviaQuestions, idTrivia, updateScoreAction } = this.props;
+    const { difficulty } = triviaQuestions[idTrivia];
+    const { player } = JSON.parse(localStorage.getItem('state'));
+    if (answer === 'correct') {
+      const ten = 10;
+      const three = 3;
+      switch (difficulty) {
+      case 'hard':
+        score = 10 + (3);
+        break;
+      case 'medium':
+        score = 10 + (2);
+        break;
+      case 'easy':
+        score = 10 + (1);
+        break;
+      default:
+        score = 0;
+      }
+    }
+    localStorage.setItem('state', JSON.stringify({ player }));
+    updateScoreAction(player.score)
+  }
+
+  checkAnswer(answer) {
+    this.updateScore(answer);
+    this.changeBorderColor();
   }
 
   renderQuestion() {
@@ -40,7 +71,7 @@ class Game extends Component {
               type="button"
               key={ `wrong-answer-${index}` }
               data-testid={ `wrong-answer-${index}` }
-              onClick={ this.changeBorderColor }
+              onClick={ () => this.checkAnswer('incorrect') }
             >
               { incorrectAnswer }
             </button>
@@ -49,7 +80,7 @@ class Game extends Component {
             style={ { border: borderCorrect } }
             type="button"
             data-testid="correct-answer"
-            onClick={ this.changeBorderColor }
+            onClick={ () => this.checkAnswer('correct') }
           >
             { correctAnswer }
           </button>
@@ -73,10 +104,15 @@ class Game extends Component {
 const mapStateToProps = (state) => ({
   triviaQuestions: state.trivia.questions,
   idTrivia: state.trivia.idTrivia,
+  player: state.player,
 });
+
+const mapDispatchToProps = (dispatch) => ({
+  updateScoreAction: (score) => dispatch(updateScore(score))
+})
 
 Game.propTypes = ({
   triviaQuestions: PropTypes.shape(Object),
 }).isRequired;
 
-export default connect(mapStateToProps)(Game);
+export default connect(mapStateToProps, mapDispatchToProps)(Game);

@@ -11,7 +11,7 @@ class Game extends Component {
     this.state = {
       borderCorrect: '',
       borderIncorrect: '',
-      isAnswered: false, // pra parar o timer quanto for true (e futuramente vai servir para o botão de ir pra próxima questão) 
+      isAnswered: false, // pra parar o timer quanto for true (e futuramente vai servir para o botão de ir pra próxima questão)
       timeLeft: 30,
     };
     this.changeBorderColor = this.changeBorderColor.bind(this);
@@ -74,7 +74,7 @@ class Game extends Component {
 
   countDown() {
     const { timeLeft, isAnswered } = this.state;
-    if (timeLeft > 0 && !isAnswered) { //acrescentei a condição de isAnswered para parar o timer 
+    if (timeLeft > 0 && !isAnswered) { // acrescentei a condição de isAnswered para parar o timer
       this.setState((oldState) => ({ timeLeft: oldState.timeLeft - 1 }));
     }
   }

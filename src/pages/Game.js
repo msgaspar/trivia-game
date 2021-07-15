@@ -9,8 +9,22 @@ class Game extends Component {
     this.state = {
       borderCorrect: '',
       borderIncorrect: '',
+      timeLeft: 30,
     };
     this.changeBorderColor = this.changeBorderColor.bind(this);
+    this.countDown = this.countDown.bind(this);
+  }
+
+  componentDidMount() {
+    const ONE_SECOND = 1000;
+    this.timer = setInterval(
+      this.countDown,
+      ONE_SECOND,
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
   }
 
   changeBorderColor() {
@@ -20,8 +34,15 @@ class Game extends Component {
     });
   }
 
+  countDown() {
+    const { timeLeft } = this.state;
+    if (timeLeft > 0) {
+      this.setState((oldState) => ({ timeLeft: oldState.timeLeft - 1 }));
+    }
+  }
+
   renderQuestion() {
-    const { borderCorrect, borderIncorrect } = this.state;
+    const { borderCorrect, borderIncorrect, timeLeft } = this.state;
     const { triviaQuestions, idTrivia } = this.props;
     const { category,
       question,
@@ -41,6 +62,7 @@ class Game extends Component {
               key={ `wrong-answer-${index}` }
               data-testid={ `wrong-answer-${index}` }
               onClick={ this.changeBorderColor }
+              disabled={ timeLeft === 0 }
             >
               { incorrectAnswer }
             </button>
@@ -50,21 +72,27 @@ class Game extends Component {
             type="button"
             data-testid="correct-answer"
             onClick={ this.changeBorderColor }
+            disabled={ timeLeft === 0 }
           >
             { correctAnswer }
           </button>
         </div>
-
       </div>
     );
   }
 
   render() {
+    const { timeLeft } = this.state;
     const { triviaQuestions } = this.props;
     return (
       <div>
         <Header />
         { triviaQuestions.length > 0 ? this.renderQuestion() : <p>Carregando...</p> }
+        <p>
+          Tempo:
+          {' '}
+          { timeLeft }
+        </p>
       </div>
     );
   }

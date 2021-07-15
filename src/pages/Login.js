@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import tokenApi from '../services/tokenApi';
+import triviaApi from '../services/triviaApi';
 import logo from '../trivia.png';
 import { setPlayer } from '../actions/playerActions';
-
+import { saveTrivia } from '../actions/triviaActions';
 import './Login.css';
 
 class Login extends Component {
@@ -34,15 +35,20 @@ class Login extends Component {
   async startGame() {
     const { token } = await tokenApi();
     const { email, name } = this.state;
-    const { setPlayerAction } = this.props;
+    const { setPlayerAction, saveTriviaAction } = this.props;
+    const five = 5;
+    const { results } = await triviaApi(token, five);
     const player = {
       name,
       assertions: 0,
       score: 0,
       gravatarEmail: email,
     };
+
     localStorage.setItem('token', token);
-    localStorage.setItem('state', JSON.stringify({player}));
+    localStorage.setItem('state', JSON.stringify({ player }));
+
+    saveTriviaAction(results);
     setPlayerAction(player);
   }
 
@@ -98,6 +104,7 @@ class Login extends Component {
 
 const mapDispatchToProps = (dispatch) => ({
   setPlayerAction: (player) => dispatch(setPlayer(player)),
+  saveTriviaAction: (trivia) => dispatch(saveTrivia(trivia)),
 });
 
 Login.propTypes = ({

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import tokenApi from '../services/tokenApi';
 import logo from '../trivia.png';
+import { setPlayer } from '../actions/playerActions';
 
 class Login extends Component {
   constructor(props) {
@@ -29,49 +31,61 @@ class Login extends Component {
 
   async startGame() {
     const { token } = await tokenApi();
+    const { email, name } = this.state;
+    const { setPlayerAction } = this.props;
+    const player = {
+      name,
+      assertions: 0,
+      score: 0,
+      gravatarEmail: email,
+    };
     localStorage.setItem('token', token);
+    localStorage.setItem('state', JSON.stringify(player));
+    setPlayerAction(player);
+  }
+
+  createTextInput(testId, value, label, name) {
+    return (
+      <label htmlFor={ testId }>
+        { label }
+        <input
+          data-testid={ testId }
+          id={ testId }
+          type="text"
+          name={ name }
+          value={ value }
+          onChange={ this.handleChange }
+        />
+      </label>
+    );
   }
 
   render() {
     const { email, name } = this.state;
+    const { history } = this.props;
     return (
       <div>
         <header className="App-header">
           <img src={ logo } className="App-logo" alt="logo" />
-          <p>
-            SUA VEZ
-          </p>
+          <p>SUA VEZ</p>
         </header>
         <form>
-          <label htmlFor="input-player-name">
-            Nome:
-            <input
-              data-testid="input-player-name"
-              id="input-player-name"
-              type="text"
-              name="name"
-              value={ name }
-              onChange={ this.handleChange }
-            />
-          </label>
-          <label htmlFor="input-gravatar-email">
-            E-mail:
-            <input
-              data-testid="input-gravatar-email"
-              id="input-gravatar-email"
-              type="text"
-              name="email"
-              value={ email }
-              onChange={ this.handleChange }
-            />
-          </label>
+          { this.createTextInput('input-player-name', name, 'Nome:', 'name')}
+          { this.createTextInput('input-gravatar-email', email, 'E-mail:', 'email')}
           <button
             data-testid="btn-play"
             type="button"
             disabled={ this.validateLogin() }
-            onClick={ () => this.startGame() }
+            onClick={ () => { this.startGame(); history.push('/jogo'); } }
           >
             Jogar
+          </button>
+          <button
+            data-testid="btn-settings"
+            type="button"
+            onClick={ () => history.push('/configuracao') }
+          >
+            Configurações
           </button>
         </form>
 
@@ -80,8 +94,14 @@ class Login extends Component {
   }
 }
 
-const mapDispatchToProps = () => ({
-  // getTokenAction: () => dispatch(getTokenAction()),
+const mapDispatchToProps = (dispatch) => ({
+  setPlayerAction: (player) => dispatch(setPlayer(player)),
 });
+
+Login.propTypes = ({
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }),
+}).isRequired;
 
 export default connect(null, mapDispatchToProps)(Login);

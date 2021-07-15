@@ -42,7 +42,7 @@ class Login extends Component {
       gravatarEmail: email,
     };
     localStorage.setItem('token', token);
-    localStorage.setItem('state', JSON.stringify({player}));
+    localStorage.setItem('state', JSON.stringify({ player }));
     setPlayerAction(player);
   }
 

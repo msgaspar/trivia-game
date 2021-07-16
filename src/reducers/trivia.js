@@ -1,6 +1,6 @@
 import { SAVE_TRIVIA } from '../actions/triviaActions';
 
-const INITIAL_STATE = { idTrivia: 0, questions: [] };
+const INITIAL_STATE = { questions: [] };
 
 function trivia(state = INITIAL_STATE, action) {
   switch (action.type) {

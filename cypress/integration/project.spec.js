@@ -219,12 +219,12 @@ describe('8 - [TELA DE JOGO] Desenvolva um timer onde a pessoa que joga tem 30 s
     cy.get(BUTTON_PLAY_SELECTOR).click();
   });
 
-  it.skip('Aguarda 5 segundos e responde a alternativa correta', () => {
+  it('Aguarda 5 segundos e responde a alternativa correta', () => {
     cy.wait(5000);
     cy.get(CORRECT_ALTERNATIVE_SELECTOR).should('not.be.disabled').click();
   });
 
-  it.skip('Aguarda mais de 30 segundos para responder', () => {
+  it('Aguarda mais de 30 segundos para responder', () => {
     cy.wait(32000);
     cy.get(CORRECT_ALTERNATIVE_SELECTOR).should('be.disabled');
   });
@@ -499,7 +499,7 @@ describe('14 - [TELA DE FEEDBACK] Exiba as informações relacionadas aos result
     });
   });
 
-  it('Acertou 4 perguntas', () => {
+  it.only('Acertou 4 perguntas', () => {
     cy.get(CORRECT_ALTERNATIVE_SELECTOR).click();
     cy.get(BUTTON_NEXT_QUESTION_SELECTOR).click();
     cy.get(CORRECT_ALTERNATIVE_SELECTOR).click();

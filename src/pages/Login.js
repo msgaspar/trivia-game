@@ -35,9 +35,8 @@ class Login extends Component {
   async startGame() {
     const { token } = await tokenApi();
     const { email, name } = this.state;
-    const { setPlayerAction, saveTriviaAction } = this.props;
+    const { setPlayerAction, saveTriviaAction, history } = this.props;
     const five = 5;
-    const { results } = await triviaApi(token, five);
     const player = {
       name,
       assertions: 0,
@@ -48,8 +47,11 @@ class Login extends Component {
     localStorage.setItem('token', token);
     localStorage.setItem('state', JSON.stringify({ player }));
 
+    const { results } = await triviaApi(token, five);
     saveTriviaAction(results);
     setPlayerAction(player);
+
+    history.push('/jogo');
   }
 
   createTextInput(testId, value, label, name) {
@@ -84,7 +86,7 @@ class Login extends Component {
             data-testid="btn-play"
             type="button"
             disabled={ this.validateLogin() }
-            onClick={ () => { this.startGame(); history.push('/jogo'); } }
+            onClick={ this.startGame }
           >
             Jogar
           </button>

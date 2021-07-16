@@ -1,24 +1,26 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import gravatarAPI from '../services/gravatarApi';
 
 class Ranking extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ranking: JSON.parse(localStorage.getItem('ranking')) || [],
+      ranking: JSON.parse(localStorage.getItem('ranking')),
     };
   }
 
   render() {
     const { ranking } = this.state;
+    console.log(ranking);
     const { history } = this.props;
     return (
       <div className="ranking-container">
         <h1 data-testid="ranking-title">Ranking</h1>
         <ul>
-          { ranking.map(({ name, score, picture }, index) => (
+          { ranking.map(({ name, score, gravatarEmail }, index) => (
             <li className="ranking-item" key={ index }>
-              <img src={ picture } alt={ `Avatar de ${name}` } />
+              <img src={ gravatarAPI(gravatarEmail) } alt={ `Avatar de ${name}` } />
               <p>
                 <span data-testid={ `player-name-${index}` }>{name}</span>
                 {' '}

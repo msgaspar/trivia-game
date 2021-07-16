@@ -47,8 +47,8 @@ class Login extends Component {
     localStorage.setItem('token', token);
     localStorage.setItem('state', JSON.stringify({ player }));
     const { results } = await triviaApi(token, five);
-    saveTriviaAction(results);
 
+    saveTriviaAction(results);
     setPlayerAction(player);
 
     history.push('/jogo');

@@ -93,6 +93,19 @@ class Game extends Component {
     }
   }
 
+  updateRanking() {
+    const { player, history } = this.props;
+    const ranking = getStorage('ranking');
+    if (ranking) {
+      const updatedRanking = [...ranking, player];
+      updatedRanking.sort((a, b) => b.score - a.score);
+      localStorage.setItem('ranking', JSON.stringify(updatedRanking));
+    } else {
+      localStorage.setItem('ranking', JSON.stringify([player]));
+    }
+    history.push('/feedback');
+  }
+
   renderQuestion() {
     const { borderCorrect, borderIncorrect, timeLeft, isAnswered, idTrivia } = this.state;
     const { triviaQuestions } = this.props;
@@ -135,13 +148,13 @@ class Game extends Component {
 
   renderButtonNext() {
     const { timeLeft, isAnswered, idTrivia } = this.state;
-    const { triviaQuestions, history } = this.props;
+    const { triviaQuestions } = this.props;
     if ((isAnswered || timeLeft === 0) && idTrivia === triviaQuestions.length - 1) {
       return (
         <button
           type="button"
           data-testid="btn-next"
-          onClick={ () => history.push('/feedback') }
+          onClick={ () => this.updateRanking() }
         >
           Próxima
         </button>
@@ -184,6 +197,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   updateScoreAction: (score) => dispatch(updateScore(score)),
+  // updateRankingAction: (player) => dispatch(updateRanking(player))
 });
 
 Game.propTypes = ({

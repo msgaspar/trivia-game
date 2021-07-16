@@ -499,7 +499,7 @@ describe('14 - [TELA DE FEEDBACK] Exiba as informações relacionadas aos result
     });
   });
 
-  it.only('Acertou 4 perguntas', () => {
+  it('Acertou 4 perguntas', () => {
     cy.get(CORRECT_ALTERNATIVE_SELECTOR).click();
     cy.get(BUTTON_NEXT_QUESTION_SELECTOR).click();
     cy.get(CORRECT_ALTERNATIVE_SELECTOR).click();

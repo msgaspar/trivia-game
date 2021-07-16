@@ -133,6 +133,19 @@ class Game extends Component {
   }
 
   renderButtonNext() {
+    const { timeLeft, isAnswered, idTrivia } = this.state;
+    const { triviaQuestions, history } = this.props;
+    if ((isAnswered || timeLeft === 0) && idTrivia === triviaQuestions.length - 1) {
+      return (
+        <button
+          type="button"
+          data-testid="btn-next"
+          onClick={ () => history.push('/feedback') }
+        >
+          Próxima
+        </button>
+      );
+    }
     return (
       <button
         type="button"

@@ -73,6 +73,7 @@ class Game extends Component {
     const { player } = getStorage('state');
     const newScore = this.newScore(difficulty, timeLeft);
     player.score += newScore;
+    player.assertions += 1;
     localStorage.setItem('state', JSON.stringify({ player }));
     updateScoreAction(newScore);
   }

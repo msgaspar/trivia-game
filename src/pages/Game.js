@@ -72,7 +72,7 @@ class Game extends Component {
     const { difficulty } = triviaQuestions[idTrivia];
     const { player } = getStorage('state');
     const newScore = this.newScore(difficulty, timeLeft);
-    player.score = newScore;
+    player.score += newScore;
     localStorage.setItem('state', JSON.stringify({ player }));
     updateScoreAction(newScore);
   }

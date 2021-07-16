@@ -5,18 +5,24 @@ import Header from '../components/Header';
 import { updateScore } from '../actions/playerActions';
 import getStorage from '../services/storage';
 
+const initialState = {
+  isAnswered: false,
+  timeLeft: 30,
+  borderCorrect: '',
+  borderIncorrect: '',
+};
+
 class Game extends Component {
   constructor() {
     super();
     this.state = {
-      borderCorrect: '',
-      borderIncorrect: '',
-      isAnswered: false, // pra parar o timer quanto for true (e futuramente vai servir para o botão de ir pra próxima questão)
-      timeLeft: 30,
+      ...initialState,
+      idTrivia: 0,
     };
     this.changeBorderColor = this.changeBorderColor.bind(this);
     this.countDown = this.countDown.bind(this);
     this.checkAnswer = this.checkAnswer.bind(this);
+    this.getNextQuestion = this.getNextQuestion.bind(this);
   }
 
   componentDidMount() {
@@ -29,6 +35,13 @@ class Game extends Component {
 
   componentWillUnmount() {
     clearInterval(this.timer);
+  }
+
+  getNextQuestion() {
+    this.setState((oldState) => ({
+      ...initialState,
+      idTrivia: oldState.idTrivia + 1,
+    }));
   }
 
   changeBorderColor() {
@@ -54,8 +67,8 @@ class Game extends Component {
   }
 
   updateScore() {
-    const { triviaQuestions, idTrivia, updateScoreAction } = this.props;
-    const { timeLeft } = this.state;
+    const { triviaQuestions, updateScoreAction } = this.props;
+    const { timeLeft, idTrivia } = this.state;
     const { difficulty } = triviaQuestions[idTrivia];
     const { player } = getStorage('state');
     const newScore = this.newScore(difficulty, timeLeft);
@@ -74,14 +87,14 @@ class Game extends Component {
 
   countDown() {
     const { timeLeft, isAnswered } = this.state;
-    if (timeLeft > 0 && !isAnswered) { // acrescentei a condição de isAnswered para parar o timer
+    if (timeLeft > 0 && !isAnswered) {
       this.setState((oldState) => ({ timeLeft: oldState.timeLeft - 1 }));
     }
   }
 
   renderQuestion() {
-    const { borderCorrect, borderIncorrect, timeLeft, isAnswered } = this.state;
-    const { triviaQuestions, idTrivia } = this.props;
+    const { borderCorrect, borderIncorrect, timeLeft, isAnswered, idTrivia } = this.state;
+    const { triviaQuestions } = this.props;
     const { category,
       question,
       incorrect_answers: incorrectAnswers,
@@ -100,7 +113,7 @@ class Game extends Component {
               key={ `wrong-answer-${index}` }
               data-testid={ `wrong-answer-${index}` }
               onClick={ () => this.checkAnswer('incorrect') }
-              disabled={ timeLeft === 0 || isAnswered } // acrescentei mais uma condição para desabilitar o botão quando a questão tiver sido respondida
+              disabled={ timeLeft === 0 || isAnswered }
             >
               { incorrectAnswer }
             </button>
@@ -119,8 +132,20 @@ class Game extends Component {
     );
   }
 
+  renderButtonNext() {
+    return (
+      <button
+        type="button"
+        data-testid="btn-next"
+        onClick={ this.getNextQuestion }
+      >
+        Próxima
+      </button>
+    );
+  }
+
   render() {
-    const { timeLeft } = this.state;
+    const { timeLeft, isAnswered } = this.state;
     const { triviaQuestions } = this.props;
     return (
       <div>
@@ -131,6 +156,7 @@ class Game extends Component {
           {' '}
           { timeLeft }
         </p>
+        { (isAnswered || timeLeft === 0) && this.renderButtonNext() }
       </div>
     );
   }

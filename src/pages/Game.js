@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
+import { updateScore } from '../actions/playerActions';
+import getStorage from '../services/storage';
 
 class Game extends Component {
   constructor() {
@@ -9,10 +11,12 @@ class Game extends Component {
     this.state = {
       borderCorrect: '',
       borderIncorrect: '',
+      isAnswered: false, // pra parar o timer quanto for true (e futuramente vai servir para o botão de ir pra próxima questão)
       timeLeft: 30,
     };
     this.changeBorderColor = this.changeBorderColor.bind(this);
     this.countDown = this.countDown.bind(this);
+    this.checkAnswer = this.checkAnswer.bind(this);
   }
 
   componentDidMount() {
@@ -34,15 +38,49 @@ class Game extends Component {
     });
   }
 
-  countDown() {
+  newScore(difficulty, time) {
+    const ten = 10;
+    const three = 3;
+    switch (difficulty) {
+    case 'hard':
+      return ten + (time * three);
+    case 'medium':
+      return ten + (time * 2);
+    case 'easy':
+      return ten + (time * 1);
+    default:
+      return 0;
+    }
+  }
+
+  updateScore() {
+    const { triviaQuestions, idTrivia, updateScoreAction } = this.props;
     const { timeLeft } = this.state;
-    if (timeLeft > 0) {
+    const { difficulty } = triviaQuestions[idTrivia];
+    const { player } = getStorage('state');
+    const newScore = this.newScore(difficulty, timeLeft);
+    player.score = newScore;
+    localStorage.setItem('state', JSON.stringify({ player }));
+    updateScoreAction(newScore);
+  }
+
+  checkAnswer(answer) {
+    this.setState({ isAnswered: true });
+    this.changeBorderColor();
+    if (answer === 'correct') {
+      this.updateScore();
+    }
+  }
+
+  countDown() {
+    const { timeLeft, isAnswered } = this.state;
+    if (timeLeft > 0 && !isAnswered) { // acrescentei a condição de isAnswered para parar o timer
       this.setState((oldState) => ({ timeLeft: oldState.timeLeft - 1 }));
     }
   }
 
   renderQuestion() {
-    const { borderCorrect, borderIncorrect, timeLeft } = this.state;
+    const { borderCorrect, borderIncorrect, timeLeft, isAnswered } = this.state;
     const { triviaQuestions, idTrivia } = this.props;
     const { category,
       question,
@@ -61,8 +99,8 @@ class Game extends Component {
               type="button"
               key={ `wrong-answer-${index}` }
               data-testid={ `wrong-answer-${index}` }
-              onClick={ this.changeBorderColor }
-              disabled={ timeLeft === 0 }
+              onClick={ () => this.checkAnswer('incorrect') }
+              disabled={ timeLeft === 0 || isAnswered } // acrescentei mais uma condição para desabilitar o botão quando a questão tiver sido respondida
             >
               { incorrectAnswer }
             </button>
@@ -71,8 +109,8 @@ class Game extends Component {
             style={ { border: borderCorrect } }
             type="button"
             data-testid="correct-answer"
-            onClick={ this.changeBorderColor }
-            disabled={ timeLeft === 0 }
+            onClick={ () => this.checkAnswer('correct') }
+            disabled={ timeLeft === 0 || isAnswered }
           >
             { correctAnswer }
           </button>
@@ -101,10 +139,15 @@ class Game extends Component {
 const mapStateToProps = (state) => ({
   triviaQuestions: state.trivia.questions,
   idTrivia: state.trivia.idTrivia,
+  player: state.player,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  updateScoreAction: (score) => dispatch(updateScore(score)),
 });
 
 Game.propTypes = ({
   triviaQuestions: PropTypes.shape(Object),
 }).isRequired;
 
-export default connect(mapStateToProps)(Game);
+export default connect(mapStateToProps, mapDispatchToProps)(Game);

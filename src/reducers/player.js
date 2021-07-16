@@ -1,4 +1,4 @@
-import { SET_PLAYER } from '../actions/playerActions';
+import { SET_PLAYER, UPDATE_SCORE } from '../actions/playerActions';
 
 const INITIAL_STATE = { };
 
@@ -8,6 +8,11 @@ function player(state = INITIAL_STATE, action) {
     return ({
       ...state,
       ...action.player,
+    });
+  case UPDATE_SCORE:
+    return ({
+      ...state,
+      score: state.score + action.score,
     });
   default:
     return state;

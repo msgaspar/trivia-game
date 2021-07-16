@@ -10,15 +10,11 @@ class Ranking extends Component {
   }
 
   render() {
-    // const ranking = [
-    //   { name: 'Diogo', score: 10, picture: 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50' },
-    //   { name: 'Ana Clara', score: 8, picture: 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec077108d50' },
-    // ];
     const { ranking } = this.state;
     const { history } = this.props;
     return (
       <div className="ranking-container">
-        <h1>Ranking</h1>
+        <h1 data-testid="ranking-title">Ranking</h1>
         <ul>
           { ranking.map(({ name, score, picture }, index) => (
             <li className="ranking-item" key={ index }>

@@ -1,6 +1,10 @@
 import { SET_PLAYER, UPDATE_SCORE } from '../actions/playerActions';
 
-const INITIAL_STATE = { };
+const INITIAL_STATE = {
+  assertions: 0,
+  score: 0,
+  gravatarEmail: 'email@email.com',
+};
 
 function player(state = INITIAL_STATE, action) {
   switch (action.type) {

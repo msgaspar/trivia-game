@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import { updateScore } from '../actions/playerActions';
-import getStorage from '../services/storage';
+import { getStorage, setRankingStorage } from '../services/storage';
+import './Game.css';
 
 const initialState = {
   isAnswered: false,
@@ -95,19 +96,32 @@ class Game extends Component {
 
   updateRanking() {
     const { player, history } = this.props;
-    const ranking = getStorage('ranking');
-    if (ranking) {
-      const updatedRanking = [...ranking, player];
-      updatedRanking.sort((a, b) => b.score - a.score);
-      localStorage.setItem('ranking', JSON.stringify(updatedRanking));
-    } else {
-      localStorage.setItem('ranking', JSON.stringify([player]));
-    }
+    setRankingStorage('ranking', player);
     history.push('/feedback');
   }
 
+  randomizeAnswers(incorrectAnswers, correctAnswer) {
+    const { borderCorrect, borderIncorrect } = this.state;
+    const incorrectAnswersObjects = incorrectAnswers.map((element, index) => ({
+      answer: element,
+      testid: `wrong-answer-${index}`,
+      border: borderIncorrect,
+      checkAnswer: 'incorrect',
+    }));
+    const correctAnswerObject = {
+      answer: correctAnswer,
+      testid: 'correct-answer',
+      border: borderCorrect,
+      checkAnswer: 'correct',
+    };
+    const allAnswers = [...incorrectAnswersObjects, correctAnswerObject];
+    allAnswers.sort((a, b) => +(a.answer > b.answer) || +(a.answer === b.answer) - 1);
+
+    return allAnswers;
+  }
+
   renderQuestion() {
-    const { borderCorrect, borderIncorrect, timeLeft, isAnswered, idTrivia } = this.state;
+    const { timeLeft, isAnswered, idTrivia } = this.state;
     const { triviaQuestions } = this.props;
     const { category,
       question,
@@ -115,32 +129,25 @@ class Game extends Component {
       correct_answer: correctAnswer,
     } = triviaQuestions[idTrivia];
 
+    const allAnswers = this.randomizeAnswers(incorrectAnswers, correctAnswer);
+
     return (
       <div>
         <h4 data-testid="question-category">{ category }</h4>
         <h3 data-testid="question-text">{ question }</h3>
-        <div>
-          { incorrectAnswers.map((incorrectAnswer, index) => (
+        <div className="answer-container">
+          { allAnswers.map((item) => (
             <button
-              style={ { border: borderIncorrect } }
+              style={ { border: item.border } }
               type="button"
-              key={ `wrong-answer-${index}` }
-              data-testid={ `wrong-answer-${index}` }
-              onClick={ () => this.checkAnswer('incorrect') }
+              key={ item.testid }
+              data-testid={ item.testid }
+              onClick={ () => this.checkAnswer(item.checkAnswer) }
               disabled={ timeLeft === 0 || isAnswered }
             >
-              { incorrectAnswer }
+              { item.answer }
             </button>
           )) }
-          <button
-            style={ { border: borderCorrect } }
-            type="button"
-            data-testid="correct-answer"
-            onClick={ () => this.checkAnswer('correct') }
-            disabled={ timeLeft === 0 || isAnswered }
-          >
-            { correctAnswer }
-          </button>
         </div>
       </div>
     );
@@ -149,6 +156,7 @@ class Game extends Component {
   renderButtonNext() {
     const { timeLeft, isAnswered, idTrivia } = this.state;
     const { triviaQuestions } = this.props;
+
     if ((isAnswered || timeLeft === 0) && idTrivia === triviaQuestions.length - 1) {
       return (
         <button
@@ -191,13 +199,11 @@ class Game extends Component {
 
 const mapStateToProps = (state) => ({
   triviaQuestions: state.trivia.questions,
-  idTrivia: state.trivia.idTrivia,
   player: state.player,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   updateScoreAction: (score) => dispatch(updateScore(score)),
-  // updateRankingAction: (player) => dispatch(updateRanking(player))
 });
 
 Game.propTypes = ({

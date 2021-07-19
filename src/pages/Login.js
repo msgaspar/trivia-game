@@ -35,8 +35,14 @@ class Login extends Component {
   async startGame() {
     const { token } = await tokenApi();
     const { email, name } = this.state;
-    const { setPlayerAction, saveTriviaAction, history } = this.props;
-    const five = 5;
+    const {
+      setPlayerAction,
+      saveTriviaAction,
+      history,
+      category,
+      difficulty,
+      type,
+    } = this.props;
     const player = {
       name,
       assertions: 0,
@@ -44,11 +50,19 @@ class Login extends Component {
       gravatarEmail: email,
     };
 
+    const settings = {
+      numberOfQuestions: 5,
+      category,
+      difficulty,
+      type,
+    };
+
     localStorage.setItem('token', token);
     localStorage.setItem('state', JSON.stringify({ player }));
-    const { results } = await triviaApi(token, five);
+    const response = await triviaApi(token, settings);
+    console.log(response);
 
-    saveTriviaAction(results);
+    saveTriviaAction(response.results);
     setPlayerAction(player);
 
     history.push('/jogo');
@@ -104,6 +118,12 @@ class Login extends Component {
   }
 }
 
+const mapStateToProps = (state) => ({
+  category: state.trivia.category,
+  difficulty: state.trivia.difficulty,
+  type: state.trivia.type,
+});
+
 const mapDispatchToProps = (dispatch) => ({
   setPlayerAction: (player) => dispatch(setPlayer(player)),
   saveTriviaAction: (trivia) => dispatch(saveTrivia(trivia)),
@@ -112,7 +132,12 @@ const mapDispatchToProps = (dispatch) => ({
 Login.propTypes = ({
   history: PropTypes.shape({
     push: PropTypes.func,
-  }),
-}).isRequired;
+  }).isRequired,
+  category: PropTypes.string.isRequired,
+  difficulty: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  setPlayerAction: PropTypes.func.isRequired,
+  saveTriviaAction: PropTypes.func.isRequired,
+});
 
-export default connect(null, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

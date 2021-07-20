@@ -160,6 +160,7 @@ class Game extends Component {
     if ((isAnswered || timeLeft === 0) && idTrivia === triviaQuestions.length - 1) {
       return (
         <button
+          className="next-button"
           type="button"
           data-testid="btn-next"
           onClick={ () => this.updateRanking() }
@@ -170,6 +171,7 @@ class Game extends Component {
     }
     return (
       <button
+        className="next-button"
         type="button"
         data-testid="btn-next"
         onClick={ this.getNextQuestion }
@@ -183,15 +185,20 @@ class Game extends Component {
     const { timeLeft, isAnswered } = this.state;
     const { triviaQuestions } = this.props;
     return (
-      <div>
-        <Header />
-        { triviaQuestions.length > 0 ? this.renderQuestion() : <p>Carregando...</p> }
-        <p>
-          Tempo:
-          {' '}
-          { timeLeft }
-        </p>
-        { (isAnswered || timeLeft === 0) && this.renderButtonNext() }
+      <div className="game-container">
+        <div className="top-container">
+          <Header />
+          <div className="timer-container">
+            <h4>Timer:</h4>
+            <h1>{ timeLeft }</h1>
+          </div>
+        </div>
+        <div className="question-answer-container">
+          { triviaQuestions.length > 0 ? this.renderQuestion() : <p>Carregando...</p> }
+          <div className="next-button-container">
+            { (isAnswered || timeLeft === 0) && this.renderButtonNext() }
+          </div>
+        </div>
       </div>
     );
   }

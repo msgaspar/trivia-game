@@ -54,12 +54,16 @@ class Game extends Component {
     updateScoreAction(newScore);
   }
 
-  checkAnswer(answer) {
+  changeBorderColor() {
     this.setState({
-      isAnswered: true,
       borderCorrect: '3px solid rgb(6, 240, 15)',
       borderIncorrect: '3px solid rgb(255, 0, 0)',
     });
+  }
+
+  checkAnswer(answer) {
+    this.setState({ isAnswered: true });
+    this.changeBorderColor();
     if (answer === 'correct') {
       this.updateScore();
     }

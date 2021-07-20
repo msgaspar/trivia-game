@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { decode } from 'he';
 import Header from '../components/Header';
 import { updateScore } from '../actions/playerActions';
 import { setRankingStorage, setScorePlayerStorage } from '../services/storage';
@@ -90,8 +91,8 @@ class Game extends Component {
 
     return (
       <div>
-        <h4 data-testid="question-category">{ category }</h4>
-        <h3 data-testid="question-text">{ question }</h3>
+        <h4 data-testid="question-category">{ decode(category) }</h4>
+        <h3 data-testid="question-text">{ decode(question) }</h3>
         <div className="answer-container">
           { answers.map((answer) => (
             <button
@@ -102,7 +103,7 @@ class Game extends Component {
               onClick={ () => this.checkAnswer(answer.checkAnswer) }
               disabled={ timeLeft === 0 || isAnswered }
             >
-              { answer.answer }
+              { decode(answer.answer) }
             </button>
           )) }
         </div>

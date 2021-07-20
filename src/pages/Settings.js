@@ -8,6 +8,8 @@ import {
   setType,
 } from '../actions/triviaActions';
 
+import './Settings.css';
+
 class Settings extends Component {
   constructor() {
     super();
@@ -100,9 +102,9 @@ class Settings extends Component {
     const { history } = this.props;
 
     return (
-      <div>
+      <div className="settings-container">
         <h2 data-testid="settings-title">Configurações</h2>
-        <form>
+        <form className="settings-form">
           {this.renderCategorySelector()}
           {this.renderDifficultySelector()}
           {this.renderTypeSelector()}
@@ -111,7 +113,7 @@ class Settings extends Component {
           type="button"
           onClick={ () => history.push('/') }
         >
-          Voltar
+          Salvar
         </button>
       </div>
     );

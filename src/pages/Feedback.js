@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Header from '../components/Header';
+import './Feedback.css';
 
 class Feedback extends Component {
   render() {
@@ -9,41 +10,45 @@ class Feedback extends Component {
     const minimumAssertions = 3;
 
     return (
-      <div>
-        <Header />
-        <div>
+      <div className="feedback-main-container">
+        <div className="top-container">
+          <Header />
+        </div>
+        <div className="feedback-container">
           <h1 data-testid="feedback-text">
             {assertions < minimumAssertions ? 'Podia ser melhor...' : 'Mandou bem!'}
           </h1>
-          <p>
+          <h3>
             Você acertou
             {' '}
             <span data-testid="feedback-total-question">{assertions}</span>
             {' '}
             questões!
-          </p>
-          <p>
+          </h3>
+          <h3>
             Um total de
             {' '}
             <span data-testid="feedback-total-score">{score}</span>
             {' '}
             pontos
-          </p>
+          </h3>
         </div>
-        <button
-          type="button"
-          data-testid="btn-ranking"
-          onClick={ () => history.push('/ranking') }
-        >
-          VER RANKING
-        </button>
-        <button
-          type="button"
-          data-testid="btn-play-again"
-          onClick={ () => history.push('/') }
-        >
-          JOGAR NOVAMENTE
-        </button>
+        <div className="buttons-container">
+          <button
+            type="button"
+            data-testid="btn-ranking"
+            onClick={ () => history.push('/ranking') }
+          >
+            Ver Ranking
+          </button>
+          <button
+            type="button"
+            data-testid="btn-play-again"
+            onClick={ () => history.push('/') }
+          >
+            Jogar novamente
+          </button>
+        </div>
       </div>
     );
   }

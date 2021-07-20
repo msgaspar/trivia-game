@@ -11,7 +11,12 @@
   flex-wrap: nowrap;
   height: 130px;
   justify-content: space-between;
+  margin: auto;
   width: 70%;
+}
+
+.img-name-container {
+  text-align: center;
 }
 
 .header-container h1 {
@@ -23,5 +28,8 @@
 }
 
 .score-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   text-align: right;
 }

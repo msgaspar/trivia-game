@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gravatarAPI from '../services/gravatarApi';
 
+import './Ranking.css';
+
 class Ranking extends Component {
   constructor(props) {
     super(props);
@@ -17,7 +19,7 @@ class Ranking extends Component {
     return (
       <div className="ranking-container">
         <h1 data-testid="ranking-title">Ranking</h1>
-        <ul>
+        <ul className="ranking-list">
           { ranking.map(({ name, score, gravatarEmail }, index) => (
             <li className="ranking-item" key={ index }>
               <img src={ gravatarAPI(gravatarEmail) } alt={ `Avatar de ${name}` } />

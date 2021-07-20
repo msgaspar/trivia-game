@@ -15,16 +15,16 @@
 .ranking-list {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   gap: 10px;
+  justify-content: space-between;
 }
 
 .ranking-list li {
-  list-style: none;
-  display: flex;
   align-items: center;
-  gap: 30px;
+  display: flex;
   font-size: 22px;
+  gap: 30px;
+  list-style: none;
 }
 
 .ranking-list img {
@@ -38,7 +38,7 @@
   border-radius: 6px;
   cursor: pointer;
   font-size: 20px;
-  margin-top: 30px;
   margin-bottom: 60px;
+  margin-top: 30px;
   padding: 10px 15px;
 }

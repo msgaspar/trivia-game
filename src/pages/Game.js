@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import { updateScore } from '../actions/playerActions';
-import { getStorage, setRankingStorage } from '../services/storage';
+import { setRankingStorage, setScorePlayerStorage } from '../services/storage';
 import './Game.css';
+import { randomizeAnswers, getNewScore } from '../services/gameServices';
 
 const initialState = {
   isAnswered: false,
@@ -20,7 +21,6 @@ class Game extends Component {
       ...initialState,
       idTrivia: 0,
     };
-    this.changeBorderColor = this.changeBorderColor.bind(this);
     this.countDown = this.countDown.bind(this);
     this.checkAnswer = this.checkAnswer.bind(this);
     this.getNextQuestion = this.getNextQuestion.bind(this);
@@ -45,43 +45,21 @@ class Game extends Component {
     }));
   }
 
-  changeBorderColor() {
-    this.setState({
-      borderCorrect: '3px solid rgb(6, 240, 15)',
-      borderIncorrect: '3px solid rgb(255, 0, 0)',
-    });
-  }
-
-  newScore(difficulty, time) {
-    const ten = 10;
-    const three = 3;
-    switch (difficulty) {
-    case 'hard':
-      return ten + (time * three);
-    case 'medium':
-      return ten + (time * 2);
-    case 'easy':
-      return ten + (time * 1);
-    default:
-      return 0;
-    }
-  }
-
   updateScore() {
     const { triviaQuestions, updateScoreAction } = this.props;
     const { timeLeft, idTrivia } = this.state;
     const { difficulty } = triviaQuestions[idTrivia];
-    const { player } = getStorage('state');
-    const newScore = this.newScore(difficulty, timeLeft);
-    player.score += newScore;
-    player.assertions += 1;
-    localStorage.setItem('state', JSON.stringify({ player }));
+    const newScore = getNewScore(difficulty, timeLeft);
+    setScorePlayerStorage('state', newScore);
     updateScoreAction(newScore);
   }
 
   checkAnswer(answer) {
-    this.setState({ isAnswered: true });
-    this.changeBorderColor();
+    this.setState({
+      isAnswered: true,
+      borderCorrect: '3px solid rgb(6, 240, 15)',
+      borderIncorrect: '3px solid rgb(255, 0, 0)',
+    });
     if (answer === 'correct') {
       this.updateScore();
     }
@@ -94,34 +72,8 @@ class Game extends Component {
     }
   }
 
-  updateRanking() {
-    const { player, history } = this.props;
-    setRankingStorage('ranking', player);
-    history.push('/feedback');
-  }
-
-  randomizeAnswers(incorrectAnswers, correctAnswer) {
-    const { borderCorrect, borderIncorrect } = this.state;
-    const incorrectAnswersObjects = incorrectAnswers.map((element, index) => ({
-      answer: element,
-      testid: `wrong-answer-${index}`,
-      border: borderIncorrect,
-      checkAnswer: 'incorrect',
-    }));
-    const correctAnswerObject = {
-      answer: correctAnswer,
-      testid: 'correct-answer',
-      border: borderCorrect,
-      checkAnswer: 'correct',
-    };
-    const allAnswers = [...incorrectAnswersObjects, correctAnswerObject];
-    allAnswers.sort((a, b) => +(a.answer > b.answer) || +(a.answer === b.answer) - 1);
-
-    return allAnswers;
-  }
-
   renderQuestion() {
-    const { timeLeft, isAnswered, idTrivia } = this.state;
+    const { timeLeft, isAnswered, idTrivia, borderCorrect, borderIncorrect } = this.state;
     const { triviaQuestions } = this.props;
     const { category,
       question,
@@ -129,23 +81,24 @@ class Game extends Component {
       correct_answer: correctAnswer,
     } = triviaQuestions[idTrivia];
 
-    const allAnswers = this.randomizeAnswers(incorrectAnswers, correctAnswer);
+    const params = [incorrectAnswers, correctAnswer, borderCorrect, borderIncorrect];
+    const answers = randomizeAnswers(...params);
 
     return (
       <div>
         <h4 data-testid="question-category">{ category }</h4>
         <h3 data-testid="question-text">{ question }</h3>
         <div className="answer-container">
-          { allAnswers.map((item) => (
+          { answers.map((answer) => (
             <button
-              style={ { border: item.border } }
+              style={ { border: answer.border } }
               type="button"
-              key={ item.testid }
-              data-testid={ item.testid }
-              onClick={ () => this.checkAnswer(item.checkAnswer) }
+              key={ answer.testid }
+              data-testid={ answer.testid }
+              onClick={ () => this.checkAnswer(answer.checkAnswer) }
               disabled={ timeLeft === 0 || isAnswered }
             >
-              { item.answer }
+              { answer.answer }
             </button>
           )) }
         </div>
@@ -155,7 +108,7 @@ class Game extends Component {
 
   renderButtonNext() {
     const { timeLeft, isAnswered, idTrivia } = this.state;
-    const { triviaQuestions } = this.props;
+    const { triviaQuestions, history, player } = this.props;
 
     if ((isAnswered || timeLeft === 0) && idTrivia === triviaQuestions.length - 1) {
       return (
@@ -163,7 +116,10 @@ class Game extends Component {
           className="next-button"
           type="button"
           data-testid="btn-next"
-          onClick={ () => this.updateRanking() }
+          onClick={ () => {
+            setRankingStorage('ranking', player);
+            history.push('/feedback');
+          } }
         >
           Próxima
         </button>

@@ -1,0 +1,45 @@
+.feedback-main-container {
+  background-color: #282c34;
+  color: white;
+  margin: auto;
+  min-height: 100vh;
+}
+
+/* .top-container {
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  height: 130px;
+  justify-content: space-between;
+  margin: auto;
+  padding-top: 30px;
+  width: 70%;
+} */
+
+.feedback-container {
+  gap: 10px;
+  margin: 20px auto;
+  text-align: center;
+  width: 50%;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px auto;
+  width: 280px;
+}
+
+.buttons-container button {
+  background-color: greenyellow;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 10px 15px;
+}
+
+.buttons-container button:first-of-type {
+  margin-top: 20px;
+}

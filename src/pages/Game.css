@@ -13,22 +13,29 @@
   justify-content: space-between;
   margin: auto;
   padding-top: 30px;
-  width: 70%;
+  width: 65%;
 }
 
 .top-container h1 {
   font-size: 50px;
+  margin: 0;
 }
 
 .top-container h2 {
   font-size: 30px;
+  margin: 0;
 }
 
 .timer-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   text-align: right;
 }
 
 .question-answer-container h3 {
+  font-size: 24px;
+  margin-bottom: 60px;
   max-width: 100%;
 }
 

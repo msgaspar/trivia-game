@@ -5,16 +5,9 @@
   min-height: 100vh;
 }
 
-/* .top-container {
-  align-items: center;
-  display: flex;
-  flex-wrap: nowrap;
-  height: 130px;
-  justify-content: space-between;
-  margin: auto;
-  padding-top: 30px;
+.top-container {
   width: 70%;
-} */
+}
 
 .feedback-container {
   gap: 10px;
